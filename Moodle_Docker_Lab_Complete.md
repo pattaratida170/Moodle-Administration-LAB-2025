@@ -944,13 +944,18 @@ docker exec -i moodle_db mysql -u moodleuser -pmoodlepassword moodle < backup_20
 
 คำตอบ:
 ```
-
+Image = แม่แบบ
+Container = ตัวที่รันจริงจาก Image
+ตัวอย่าง: Image moodlehq/moodle → Container moodle_app
 ```
 
 **2. จากสถาปัตยกรรมในการทดลอง มี Container กี่ตัว? แต่ละตัวมีหน้าที่อะไร?**
 
 คำตอบ:
 ```
+มี 2 ตัว
+	•	moodle_app : รันเว็บ Moodle
+	•	moodle_db : เก็บฐานข้อมูล
 
 ```
 
@@ -958,6 +963,9 @@ docker exec -i moodle_db mysql -u moodleuser -pmoodlepassword moodle < backup_20
 
 คำตอบ:
 ```
+ใช้ Named Volume
+	•	ข้อดี: ข้อมูลไม่หาย
+	•	ข้อเสีย: ใช้พื้นที่เพิ่ม
 
 ```
 
@@ -965,7 +973,8 @@ docker exec -i moodle_db mysql -u moodleuser -pmoodlepassword moodle < backup_20
 
 คำตอบ:
 ```
-
+ทำให้ Container ติดต่อกันได้
+สื่อสารผ่าน ชื่อ service เช่น db
 
 ```
 
@@ -974,14 +983,15 @@ docker exec -i moodle_db mysql -u moodleuser -pmoodlepassword moodle < backup_20
 
 คำตอบ:
 ```
-
+กำหนดลำดับการเริ่ม Container
+ให้ DB เริ่มก่อน Moodle
 ```
 
 **6. ถ้าต้องการเปลี่ยน Port ของ Moodle  เป็น 9000 ต้องแก้ไขส่วนใดของไฟล์?**
 
 คำตอบ:
 ```
-
+แก้ ports - "9000:80"
 
 ```
 
@@ -989,7 +999,8 @@ docker exec -i moodle_db mysql -u moodleuser -pmoodlepassword moodle < backup_20
 
 คำตอบ:
 ```
-
+ชี้ไปที่ Database Container
+ไม่ใช้ localhost เพราะอยู่คนละ Container
 ```
 
 
@@ -997,20 +1008,18 @@ docker exec -i moodle_db mysql -u moodleuser -pmoodlepassword moodle < backup_20
 
 คำตอบ:
 ```
-
+	•	Docker: ติดตั้งง่าย ย้ายสะดวก
+	•	ปกติ: ควบคุมได้มาก แต่ติดตั้งยาก
 ```
 
 **9. ถ้าต้องการเพิ่ม Container Redis สำหรับ Caching จะต้องแก้ไข docker-compose.yml อย่างไร?**
 
 คำตอบ (เขียน YAML):
 ```yaml
-
-
-
-
-
-
-
+redis:
+  image: redis:alpine
+  container_name: moodle_redis
+  restart: always
 
 ```
 
@@ -1019,10 +1028,11 @@ docker exec -i moodle_db mysql -u moodleuser -pmoodlepassword moodle < backup_20
 
 คำตอบ:
 ```
-วิธีตรวจสอบ:
+วิธีตรวจสอบ:logs, env, network
 
 
-วิธีแก้ไข:
+วิธีแก้ไข:แก้ไขชื่อ db / รหัสผ่าน / restart
+
 
 ```
 
@@ -1030,7 +1040,7 @@ docker exec -i moodle_db mysql -u moodleuser -pmoodlepassword moodle < backup_20
 
 คำตอบ:
 ```
-
+ลบ Container + Volume → ข้อมูลหายหมด
 
 ```
 
